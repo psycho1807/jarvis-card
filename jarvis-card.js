@@ -1,7 +1,7 @@
 // Jarvis card – talk to Home Assistant Assist with an animated reactor ring.
 // Part of the WallDock project: https://github.com/psycho1807/WallDock
 // License: GPL-3.0
-const JARVIS_VERSION = '1.0.0';
+const JARVIS_VERSION = '1.1.0';
 const JARVIS_TEXT = {
   fr: { tap: 'TOUCHEZ POUR PARLER', listen: 'JE VOUS ÉCOUTE…', think: 'JE RÉFLÉCHIS…', mic: 'Micro refusé : autorisez le micro pour cette app.', conn: 'Impossible de joindre Assist.', none: "Je n'ai rien entendu.", err: 'Erreur', q: (t) => `« ${t} »` },
   en: { tap: 'TAP TO SPEAK', listen: 'LISTENING…', think: 'THINKING…', mic: 'Microphone blocked: allow the microphone for this app.', conn: 'Cannot reach Assist.', none: "I didn't hear anything.", err: 'Error', q: (t) => `“${t}”` },
@@ -10,6 +10,7 @@ console.info(`%c JARVIS-CARD %c ${JARVIS_VERSION} `, 'color:#02060c;background:#
 class JarvisCard extends HTMLElement {
   setConfig(config) {
     this._config = config || {};
+    this._theme = this._config.theme === 'gotham' ? 'gotham' : 'classic';
   }
   getCardSize() { return 12; }
 
@@ -44,12 +45,17 @@ class JarvisCard extends HTMLElement {
         <div class="q"></div>
         <div class="a"></div>
       </div>`;
+    if (this._theme === 'gotham') {
+      const style = document.createElement('style');
+      style.textContent = '.wrap{background:radial-gradient(ellipse at center,#18232c 0%,#080e14 50%,#010204 100%)}.title{color:#d8b66c}.status{color:#b3b7ba}.a{text-shadow:0 0 12px rgba(218,177,94,.55)}';
+      root.appendChild(style);
+    }
     this._wrap = root.querySelector('.wrap');
     this._canvas = root.querySelector('canvas');
     this._status = root.querySelector('.status');
     this._q = root.querySelector('.q');
     this._a = root.querySelector('.a');
-    root.querySelector('.title').textContent = this._config.title || 'J.A.R.V.I.S.';
+    root.querySelector('.title').textContent = this._config.name || this._config.title || 'J.A.R.V.I.S.';
     this._player = new Audio();
     this._player.setAttribute('playsinline', '');
     this._wrap.addEventListener('click', () => this._tap());
@@ -257,7 +263,12 @@ class JarvisCard extends HTMLElement {
     const t = (performance.now() - this._t0) / 1000;
     const cx = w / 2, cy = h / 2, R = Math.min(w, h) / 2;
     const mode = this._mode;
-    const col = { listening: [63, 212, 255], thinking: [255, 179, 71], speaking: [77, 217, 255], error: [255, 59, 78], idle: [63, 212, 255] }[mode];
+    const gotham = this._theme === 'gotham';
+    const col = (gotham ? {
+      listening: [213, 182, 107], thinking: [247, 209, 119], speaking: [235, 197, 110], error: [240, 76, 72], idle: [184, 158, 95]
+    } : {
+      listening: [63, 212, 255], thinking: [255, 179, 71], speaking: [77, 217, 255], error: [255, 59, 78], idle: [63, 212, 255]
+    })[mode];
     const rgba = (a) => `rgba(${col[0]},${col[1]},${col[2]},${a})`;
     this._smooth += (this._level - this._smooth) * 0.3;
     const s = this._smooth;
@@ -268,6 +279,13 @@ class JarvisCard extends HTMLElement {
     else if (mode === 'idle') energy = 0.15 + 0.05 * Math.sin(t * 1.5);
     else energy = 0.3;
 
+    if (gotham) {
+      // Gotham radar sweep: intentionally subtle so the voice-controlled ring remains legible.
+      g.save(); g.translate(cx, cy); g.rotate(t * (mode === 'thinking' ? 0.8 : 0.2));
+      const beam = g.createLinearGradient(0, 0, R, R);
+      beam.addColorStop(0, 'rgba(213,182,107,0)'); beam.addColorStop(1, 'rgba(213,182,107,.10)');
+      g.fillStyle = beam; g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, R * .92, -.22, .22); g.closePath(); g.fill(); g.restore();
+    }
     const core = R * (0.30 + 0.12 * energy);
     const grad = g.createRadialGradient(cx, cy, 0, cx, cy, core * 2.2);
     grad.addColorStop(0, rgba(0.9)); grad.addColorStop(0.45, rgba(0.27)); grad.addColorStop(1, rgba(0));
