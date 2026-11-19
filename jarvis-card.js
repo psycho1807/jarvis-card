@@ -1,7 +1,7 @@
 // Jarvis card – talk to Home Assistant Assist with an animated reactor ring.
 // Part of the WallDock project: https://github.com/psycho1807/WallDock
 // License: GPL-3.0
-const JARVIS_VERSION = '1.1.2';
+const JARVIS_VERSION = '1.1.3';
 const JARVIS_TEXT = {
   fr: { tap: 'TOUCHEZ POUR PARLER', listen: 'JE VOUS ÉCOUTE…', think: 'JE RÉFLÉCHIS…', mic: 'Micro refusé : autorisez le micro pour cette app.', conn: 'Impossible de joindre Assist.', none: "Je n'ai rien entendu.", err: 'Erreur', q: (t) => `« ${t} »` },
   en: { tap: 'TAP TO SPEAK', listen: 'LISTENING…', think: 'THINKING…', mic: 'Microphone blocked: allow the microphone for this app.', conn: 'Cannot reach Assist.', none: "I didn't hear anything.", err: 'Error', q: (t) => `“${t}”` },
@@ -329,5 +329,8 @@ class JarvisCard extends HTMLElement {
   }
 }
 if (!customElements.get('jarvis-card')) customElements.define('jarvis-card', JarvisCard);
+// Dedicated registration avoids collisions with a legacy Jarvis component already loaded by HA.
+if (!customElements.get('alfred-card')) customElements.define('alfred-card', class AlfredCard extends JarvisCard {});
 window.customCards = window.customCards || [];
 window.customCards.push({ type: 'jarvis-card', name: 'Jarvis', description: 'Talk to Assist with an animated reactor ring (WallDock)', preview: false, documentationURL: 'https://github.com/psycho1807/jarvis-card' });
+window.customCards.push({ type: 'alfred-card', name: 'Alfred (Gotham)', description: 'Dedicated Jarvis Card tag for custom assistant themes', preview: false, documentationURL: 'https://github.com/psycho1807/jarvis-card' });
