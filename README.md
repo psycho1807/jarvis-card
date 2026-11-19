@@ -24,8 +24,12 @@ The card is meant to fill a whole view. Create a dashboard (or a view) of type *
 ```yaml
 type: custom:jarvis-card
 pipeline: 01abc...   # optional – Assist pipeline id, default: your preferred pipeline
-title: J.A.R.V.I.S.  # optional
+title: J.A.R.V.I.S.  # optional, legacy display title
+name: Alfred       # optional, overrides title
+theme: gotham     # optional: classic (default) or gotham
 ```
+
+The `name` changes only the displayed assistant name. To change the spoken wake word (for example, “Hey Alfred”), configure a compatible wake-word model separately in Home Assistant or WallDock. The `theme` option only changes the visual animation; the Assist pipeline and voice are unchanged.
 
 Find the pipeline id in **Settings → Voice assistants** (it is in the address bar when you open a pipeline).
 
