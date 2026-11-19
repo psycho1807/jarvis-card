@@ -1,7 +1,7 @@
 // Jarvis card – talk to Home Assistant Assist with an animated reactor ring.
 // Part of the WallDock project: https://github.com/psycho1807/WallDock
 // License: GPL-3.0
-const JARVIS_VERSION = '1.1.1';
+const JARVIS_VERSION = '1.1.2';
 const JARVIS_TEXT = {
   fr: { tap: 'TOUCHEZ POUR PARLER', listen: 'JE VOUS ÉCOUTE…', think: 'JE RÉFLÉCHIS…', mic: 'Micro refusé : autorisez le micro pour cette app.', conn: 'Impossible de joindre Assist.', none: "Je n'ai rien entendu.", err: 'Erreur', q: (t) => `« ${t} »` },
   en: { tap: 'TAP TO SPEAK', listen: 'LISTENING…', think: 'THINKING…', mic: 'Microphone blocked: allow the microphone for this app.', conn: 'Cannot reach Assist.', none: "I didn't hear anything.", err: 'Error', q: (t) => `“${t}”` },
@@ -38,7 +38,7 @@ class JarvisCard extends HTMLElement {
           display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px 28px; box-sizing:border-box;
           font-family:-apple-system, Roboto, sans-serif; -webkit-user-select:none; user-select:none; cursor:pointer; text-align:center; }
         .title { color:#3fd4ff; font-weight:700; font-size:13px; letter-spacing:.5em; }
-        canvas { display:block; box-sizing:border-box; width:min(70vw, 300px); max-width:100%; height:auto; aspect-ratio:1 / 1; flex:0 0 auto; margin:18px auto; }
+        canvas { display:block; box-sizing:border-box; width:min(70vw, 300px); max-width:100%; height:min(70vw, 300px); max-height:300px; aspect-ratio:1 / 1; flex:0 0 auto; margin:18px auto; }
         .status { color:#7f9bc4; font-size:15px; letter-spacing:.15em; min-height:20px; }
         .q { color:#b0c4e0; font-style:italic; font-size:18px; margin-top:16px; line-height:1.3; }
         .a { color:#fff; font-size:21px; margin-top:12px; line-height:1.35; text-shadow:0 0 10px rgba(63,212,255,.5); max-width:640px; }
